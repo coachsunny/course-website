@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>自牧平施 - 做自己的英雄</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#faf8f5;--card:#ffffff;--border:#e8e4df;
+    --green:#6b8f71;--green-light:#e8f0e9;--green-dark:#4a6b4f;
+    --gold:#e8c07d;--gold-light:#fdf5e6;--gold-dark:#c9a05c;
+    --text:#2c2c2c;--text-secondary:#6b6b6b;--text-muted:#999;
+    --shadow:0 2px 12px rgba(0,0,0,0.06);
+    --shadow-hover:0 4px 20px rgba(0,0,0,0.1);
+    --radius:14px;
+  }
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Microsoft JhengHei","Noto Sans TC",sans-serif;
+    background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh;
+  }
+
+  /* Hero */
+  .hero{
+    text-align:center;padding:60px 24px 50px;
+    background:linear-gradient(135deg,var(--green) 0%,var(--green-dark) 100%);
+    color:#fff;position:relative;overflow:hidden;
+  }
+  .hero::before{
+    content:'';position:absolute;top:-40%;right:-15%;
+    width:500px;height:500px;border-radius:50%;
+    background:rgba(232,192,125,0.1);
+  }
+  .hero h1{font-size:2.2rem;font-weight:700;margin-bottom:8px;position:relative;z-index:1;letter-spacing:2px}
+  .hero .subtitle{font-size:1.1rem;opacity:0.9;margin-bottom:16px;position:relative;z-index:1}
+  .hero .tagline{
+    font-size:0.95rem;opacity:0.7;
+    font-style:italic;position:relative;z-index:1;
+  }
+  .hero .credentials{
+    display:flex;flex-wrap:wrap;justify-content:center;gap:8px;
+    margin-top:20px;position:relative;z-index:1;
+  }
+  .hero .cred-tag{
+    padding:4px 14px;border-radius:20px;font-size:0.78rem;
+    background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);
+  }
+
+  /* Nav */
+  nav{
+    display:flex;justify-content:center;gap:24px;
+    padding:16px 24px;background:var(--card);
+    border-bottom:1px solid var(--border);
+    position:sticky;top:0;z-index:50;
+  }
+  nav a{
+    text-decoration:none;color:var(--text-secondary);
+    font-size:0.92rem;font-weight:500;
+    padding:6px 16px;border-radius:20px;transition:all .2s;
+  }
+  nav a:hover{background:var(--green-light);color:var(--green-dark)}
+
+  /* Main */
+  .main{max-width:960px;margin:0 auto;padding:40px 24px 60px}
+
+  /* Section */
+  .section{margin-bottom:48px}
+  .section-title{
+    font-size:1.3rem;font-weight:700;color:var(--green-dark);
+    margin-bottom:20px;display:flex;align-items:center;gap:10px;
+  }
+  .section-title .icon{font-size:1.4rem}
+
+  /* Tool cards */
+  .tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
+  .tool-card{
+    background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+    padding:24px;box-shadow:var(--shadow);transition:all .25s;
+    text-decoration:none;color:inherit;display:block;
+  }
+  .tool-card:hover{box-shadow:var(--shadow-hover);transform:translateY(-2px);border-color:var(--green)}
+  .tool-card .tool-icon{font-size:2rem;margin-bottom:12px}
+  .tool-card h3{font-size:1.05rem;font-weight:600;color:var(--green-dark);margin-bottom:8px}
+  .tool-card p{font-size:0.88rem;color:var(--text-secondary);line-height:1.6}
+  .tool-card .tool-tag{
+    display:inline-block;margin-top:12px;padding:3px 10px;border-radius:12px;
+    font-size:0.72rem;background:var(--green-light);color:var(--green-dark);font-weight:500;
+  }
+
+  /* Knowledge cards */
+  .knowledge-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px}
+  .knowledge-card{
+    background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+    padding:20px;text-align:center;transition:all .2s;cursor:pointer;
+  }
+  .knowledge-card:hover{border-color:var(--gold);box-shadow:var(--shadow)}
+  .knowledge-card .k-icon{font-size:1.8rem;margin-bottom:10px}
+  .knowledge-card h4{font-size:0.95rem;font-weight:600;color:var(--text);margin-bottom:4px}
+  .knowledge-card p{font-size:0.8rem;color:var(--text-muted)}
+
+  /* Logo */
+  .hero .logo{
+    width:120px;height:120px;border-radius:50%;
+    object-fit:cover;border:3px solid rgba(255,255,255,0.8);
+    box-shadow:0 4px 20px rgba(0,0,0,0.15);
+    margin-bottom:16px;
+  }
+
+  /* Coming soon */
+  .coming-soon{
+    text-align:center;padding:32px;background:var(--gold-light);
+    border:1px dashed var(--gold);border-radius:var(--radius);
+  }
+  .coming-soon p{color:var(--gold-dark);font-size:0.92rem}
+
+  /* Footer */
+  footer{
+    text-align:center;padding:30px 24px;
+    border-top:1px solid var(--border);
+    font-size:0.82rem;color:var(--text-muted);
+  }
+
+  /* Responsive */
+  @media(max-width:600px){
+    .hero h1{font-size:1.7rem}
+    .hero .subtitle{font-size:0.95rem}
+    nav{gap:12px;padding:12px 16px}
+    nav a{font-size:0.84rem;padding:5px 12px}
+    .main{padding:28px 16px 40px}
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <img src="images/logo.png" alt="自牧平施" class="logo">
+  <h1>自牧平施</h1>
+  <div class="subtitle">做自己的英雄</div>
+  <div class="tagline">教練 · 對話 · 成長</div>
+  <div class="credentials">
+    <span class="cred-tag">ICF-ACC 認證教練</span>
+    <span class="cred-tag">ICA-CPC</span>
+    <span class="cred-tag">POY-L2</span>
+    <span class="cred-tag">PMI-PMP</span>
+  </div>
+</div>
+
+<nav>
+  <a href="#tools">🛠️ 工具集</a>
+  <a href="#knowledge">📚 知識庫</a>
+  <a href="#courses">🎓 課程</a>
+  <a href="#about">🙋 關於我</a>
+</nav>
+
+<div class="main">
+
+  <!-- 工具集 -->
+  <div class="section" id="tools">
+    <div class="section-title"><span class="icon">🛠️</span> 工具集</div>
+    <div class="tool-grid">
+      <a class="tool-card" href="tools/通用提示词生成器.html">
+        <div class="tool-icon">🧩</div>
+        <h3>通用提示詞生成器</h3>
+        <p>填寫角色、任務、格式等參數卡片，一鍵組合結構化優質提示詞，適用任何 AI 對話場景。</p>
+        <span class="tool-tag">7 參數 · 3 範本 · 即時預覽</span>
+      </a>
+      <a class="tool-card" href="tools/对话练习提示词生成器.html">
+        <div class="tool-icon">🗣️</div>
+        <h3>對話練習提示詞生成器</h3>
+        <p>設定練習對象、溝通框架、自訂口令，快速生成 NVC 對話練習提示詞，貼到 ChatGPT 即可開始。</p>
+        <span class="tool-tag">NVC · 自訂場景 · 口令設定</span>
+      </a>
+      <div class="tool-card" style="opacity:0.5;cursor:default">
+        <div class="tool-icon">🔮</div>
+        <h3>命理分析工具</h3>
+        <p>結合易經、紫微、八字的 AI 深度剖析工具，規劃中。</p>
+        <span class="tool-tag" style="background:var(--gold-light);color:var(--gold-dark)">開發中</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 知識庫 -->
+  <div class="section" id="knowledge">
+    <div class="section-title"><span class="icon">📚</span> 知識庫</div>
+    <div class="knowledge-grid">
+      <div class="knowledge-card">
+        <div class="k-icon">💚</div>
+        <h4>非暴力溝通</h4>
+        <p>NVC 方法論與實踐筆記</p>
+      </div>
+      <div class="knowledge-card">
+        <div class="k-icon">🎯</div>
+        <h4>教練技術</h4>
+        <p>ICF 核心能力與教練模型</p>
+      </div>
+      <div class="knowledge-card">
+        <div class="k-icon">🔮</div>
+        <h4>命理研究</h4>
+        <p>易經 · 紫微 · 八字</p>
+      </div>
+      <div class="knowledge-card">
+        <div class="k-icon">🤖</div>
+        <h4>AI 應用</h4>
+        <p>提示詞工程與智能體設計</p>
+      </div>
+    </div>
+    <div class="coming-soon" style="margin-top:20px">
+      <p>📖 知識庫內容整理中，敬請期待</p>
+    </div>
+  </div>
+
+  <!-- 課程 -->
+  <div class="section" id="courses">
+    <div class="section-title"><span class="icon">🎓</span> 課程</div>
+    <div class="coming-soon">
+      <p>🎓 5門課程內容準備中，即將上線</p>
+    </div>
+  </div>
+
+  <!-- 關於我 -->
+  <div class="section" id="about">
+    <div class="section-title"><span class="icon">🙋</span> 關於我</div>
+    <div class="tool-card" style="cursor:default">
+      <p style="font-size:0.95rem;line-height:1.8;color:var(--text)">
+        我是「自牧平施」品牌的創辦人，一位 ICF-ACC 認證教練。
+        相信每個人都能「做自己的英雄」——透過非暴力溝通的深度對話，
+        幫助你看見內在的需求，找到前行的力量。
+      </p>
+      <p style="font-size:0.95rem;line-height:1.8;color:var(--text);margin-top:16px">
+        這個網站是我的個人知識基地，收錄了我設計的小工具、學習筆記、以及課程資源。
+        歡迎使用，也歡迎分享給需要的朋友。
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  自牧平施 © 2026 ｜ 做自己的英雄 ｜ 且行且看
+</footer>
+
+</body>
+</html>

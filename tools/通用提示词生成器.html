@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>通用提示詞產生器</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#faf8f5;--card:#ffffff;--border:#e8e4df;
+    --green:#6b8f71;--green-light:#e8f0e9;--green-dark:#4a6b4f;
+    --gold:#e8c07d;--gold-light:#fdf5e6;--gold-dark:#c9a05c;
+    --text:#2c2c2c;--text-secondary:#6b6b6b;--text-muted:#999;
+    --shadow:0 2px 12px rgba(0,0,0,0.06);
+    --shadow-hover:0 4px 20px rgba(0,0,0,0.1);
+    --radius:14px;--radius-sm:10px;
+  }
+  html{scroll-behavior:smooth}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Microsoft JhengHei","Noto Sans TC",sans-serif;
+    background:var(--bg);color:var(--text);line-height:1.6;
+    min-height:100vh;padding-bottom:100px;
+  }
+  .header{
+    text-align:center;padding:40px 20px 30px;
+    background:linear-gradient(135deg,var(--green) 0%,var(--green-dark) 100%);
+    color:#fff;position:relative;overflow:hidden;
+  }
+  .header::before{
+    content:'';position:absolute;top:-50%;right:-20%;
+    width:400px;height:400px;border-radius:50%;
+    background:rgba(232,192,125,0.12);
+  }
+  .header::after{
+    content:'';position:absolute;bottom:-30%;left:-10%;
+    width:300px;height:300px;border-radius:50%;
+    background:rgba(255,255,255,0.06);
+  }
+  .header h1{font-size:1.8rem;font-weight:700;margin-bottom:6px;position:relative;z-index:1}
+  .header p{font-size:0.92rem;opacity:0.85;position:relative;z-index:1}
+  .template-bar{
+    display:flex;align-items:center;gap:10px;
+    padding:16px 24px;background:var(--gold-light);
+    border-bottom:1px solid var(--gold);flex-wrap:wrap;
+    justify-content:center;
+  }
+  .template-bar span{font-size:0.88rem;color:var(--gold-dark);font-weight:600;white-space:nowrap}
+  .tpl-btn{
+    padding:7px 18px;border-radius:20px;border:1.5px solid var(--gold);
+    background:#fff;color:var(--gold-dark);font-size:0.84rem;
+    cursor:pointer;transition:all .2s;font-weight:500;
+  }
+  .tpl-btn:hover{background:var(--gold);color:#fff}
+  .main{
+    display:flex;gap:28px;max-width:1280px;
+    margin:0 auto;padding:28px 24px;
+  }
+  .params{flex:0 0 58%;min-width:0}
+  .preview-col{flex:1;min-width:0}
+  .card{
+    background:var(--card);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:22px 24px;
+    margin-bottom:18px;border:1px solid var(--border);
+    transition:box-shadow .25s,transform .25s;
+  }
+  .card:hover{box-shadow:var(--shadow-hover);transform:translateY(-1px)}
+  .card-head{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+  .card-title{font-size:1.05rem;font-weight:700;color:var(--green-dark)}
+  .card-badge{
+    font-size:0.7rem;padding:2px 8px;border-radius:10px;
+    font-weight:600;letter-spacing:.3px;
+  }
+  .badge-required{background:var(--green-light);color:var(--green-dark)}
+  .badge-optional{background:#f0eeeb;color:var(--text-muted)}
+  .card-desc{font-size:0.82rem;color:var(--text-secondary);margin-bottom:12px}
+  .card input,.card textarea{
+    width:100%;border:1.5px solid var(--border);border-radius:var(--radius-sm);
+    padding:12px 14px;font-size:0.9rem;font-family:inherit;
+    background:var(--bg);color:var(--text);transition:border-color .2s,box-shadow .2s;
+    resize:vertical;
+  }
+  .card input:focus,.card textarea:focus{
+    outline:none;border-color:var(--green);
+    box-shadow:0 0 0 3px rgba(107,143,113,0.12);
+  }
+  .card textarea{min-height:80px}
+  .card input::placeholder,.card textarea::placeholder{color:var(--text-muted);font-style:italic}
+  .shake{animation:shake .4s ease}
+  @keyframes shake{
+    0%,100%{transform:translateX(0)}
+    20%,60%{transform:translateX(-6px)}
+    40%,80%{transform:translateX(6px)}
+  }
+  .field-error{border-color:#d9534f !important;box-shadow:0 0 0 3px rgba(217,83,79,0.12) !important}
+  .preview-wrap{position:sticky;top:24px}
+  .preview-card{
+    background:var(--card);border-radius:var(--radius);
+    box-shadow:var(--shadow);border:1px solid var(--border);
+    overflow:hidden;
+  }
+  .preview-header{
+    background:linear-gradient(135deg,var(--green) 0%,var(--green-dark) 100%);
+    color:#fff;padding:18px 22px;
+  }
+  .preview-header h2{font-size:1.05rem;font-weight:700}
+  .preview-body{padding:22px}
+  .preview-content{
+    font-size:0.88rem;line-height:1.75;
+    white-space:pre-wrap;word-break:break-word;
+    color:var(--text);min-height:120px;
+    background:var(--bg);border-radius:var(--radius-sm);
+    padding:18px;border:1px dashed var(--border);
+  }
+  .preview-content .section-title{color:var(--green-dark);font-weight:700}
+  .preview-footer{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:12px 22px;border-top:1px solid var(--border);
+    font-size:0.8rem;color:var(--text-muted);
+  }
+  .preview-placeholder{
+    color:var(--text-muted);font-style:italic;
+    text-align:center;padding:30px 10px;
+  }
+  .bottom-bar{
+    position:fixed;bottom:0;left:0;right:0;
+    background:rgba(255,255,255,0.92);
+    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    border-top:1px solid var(--border);
+    padding:14px 24px;display:flex;justify-content:center;
+    gap:12px;z-index:100;
+  }
+  .btn{
+    padding:11px 28px;border-radius:12px;font-size:0.92rem;
+    font-weight:600;cursor:pointer;border:none;transition:all .2s;
+    display:inline-flex;align-items:center;gap:6px;
+  }
+  .btn-primary{
+    background:linear-gradient(135deg,var(--green) 0%,var(--green-dark) 100%);
+    color:#fff;box-shadow:0 3px 12px rgba(107,143,113,0.3);
+  }
+  .btn-primary:hover{transform:translateY(-1px);box-shadow:0 5px 18px rgba(107,143,113,0.35)}
+  .btn-gold{
+    background:linear-gradient(135deg,var(--gold) 0%,var(--gold-dark) 100%);
+    color:#fff;box-shadow:0 3px 12px rgba(232,192,125,0.3);
+  }
+  .btn-gold:hover{transform:translateY(-1px);box-shadow:0 5px 18px rgba(232,192,125,0.35)}
+  .btn-outline{background:#fff;color:var(--text-secondary);border:1.5px solid var(--border)}
+  .btn-outline:hover{border-color:var(--green);color:var(--green)}
+  .toast{
+    position:fixed;top:24px;left:50%;transform:translateX(-50%) translateY(-80px);
+    background:var(--green-dark);color:#fff;
+    padding:12px 28px;border-radius:12px;font-size:0.88rem;font-weight:500;
+    box-shadow:0 6px 24px rgba(0,0,0,0.15);z-index:200;
+    transition:transform .35s cubic-bezier(.4,0,.2,1),opacity .35s;
+    opacity:0;pointer-events:none;
+  }
+  .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+  @media(max-width:860px){
+    .main{flex-direction:column;padding:18px 14px}
+    .params,.preview-col{flex:none;width:100%}
+    .preview-wrap{position:static}
+    .header h1{font-size:1.5rem}
+    .bottom-bar{padding:10px 14px;gap:8px}
+    .btn{padding:10px 16px;font-size:0.84rem}
+  }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>🧩 通用提示詞產生器</h1>
+  <p>填寫參數卡片，一鍵組合結構化優質提示詞</p>
+</div>
+<div class="template-bar">
+  <span>📚 載入範本：</span>
+  <button class="tpl-btn" onclick="loadTemplate(0)">🎯 教練對話</button>
+  <button class="tpl-btn" onclick="loadTemplate(1)">✍️ 文案撰寫</button>
+  <button class="tpl-btn" onclick="loadTemplate(2)">📊 數據分析</button>
+</div>
+<div class="main">
+  <div class="params" id="paramsArea">
+    <div class="card" data-field="role">
+      <div class="card-head">
+        <span class="card-title">🎭 角色 Role</span>
+        <span class="card-badge badge-required">必填</span>
+      </div>
+      <div class="card-desc">你希望 AI 扮演什麼角色？越具體越好。</div>
+      <textarea id="role" placeholder="例如：你是一位有10年經驗的ICF認證教練" rows="2"></textarea>
+    </div>
+    <div class="card" data-field="context">
+      <div class="card-head">
+        <span class="card-title">📖 背景 Context</span>
+        <span class="card-badge badge-optional">選填</span>
+      </div>
+      <div class="card-desc">提供任務的背景資訊，幫助 AI 理解情境。</div>
+      <textarea id="context" placeholder="例如：我的客戶是一位35歲的女性主管，剛被升職，面臨團隊管理挑戰" rows="2"></textarea>
+    </div>
+    <div class="card" data-field="task">
+      <div class="card-head">
+        <span class="card-title">📋 任務 Task</span>
+        <span class="card-badge badge-required">必填</span>
+      </div>
+      <div class="card-desc">你希望 AI 具體做什麼？描述越清楚，結果越精準。</div>
+      <textarea id="task" placeholder="例如：幫我設計一段1對1教練面談的開場白" rows="2"></textarea>
+    </div>
+    <div class="card" data-field="format">
+      <div class="card-head">
+        <span class="card-title">🗂️ 格式 Format</span>
+        <span class="card-badge badge-optional">選填</span>
+      </div>
+      <div class="card-desc">你希望輸出是什麼形式？條列、表格、段落、步驟……</div>
+      <input type="text" id="format" placeholder="例如：用條列式呈現，給3個不同風格的版本">
+    </div>
+    <div class="card" data-field="tone">
+      <div class="card-head">
+        <span class="card-title">🎨 語氣 Tone</span>
+        <span class="card-badge badge-optional">選填</span>
+      </div>
+      <div class="card-desc">輸出的風格和語氣。</div>
+      <input type="text" id="tone" placeholder="例如：溫暖但專業，像一位信任你的導師">
+    </div>
+    <div class="card" data-field="constraint">
+      <div class="card-head">
+        <span class="card-title">⛔ 限制 Constraint</span>
+        <span class="card-badge badge-optional">選填</span>
+      </div>
+      <div class="card-desc">有什麼邊界或禁忌？字數限制、不要出現什麼……</div>
+      <textarea id="constraint" placeholder="例如：不要使用心理學術語，控制在300字以內" rows="2"></textarea>
+    </div>
+    <div class="card" data-field="example">
+      <div class="card-head">
+        <span class="card-title">💡 範例 Example</span>
+        <span class="card-badge badge-optional">選填</span>
+      </div>
+      <div class="card-desc">給 AI 看一個你滿意的成品範例，它會模仿風格。</div>
+      <textarea id="example" placeholder="例如：像這樣：「嗨，今天想先聽聽你這週工作上最有成就感的一件事」" rows="2"></textarea>
+    </div>
+  </div>
+  <div class="preview-col">
+    <div class="preview-wrap">
+      <div class="preview-card">
+        <div class="preview-header"><h2>👁️ 即時預覽</h2></div>
+        <div class="preview-body">
+          <div class="preview-content" id="previewContent">
+            <div class="preview-placeholder">填寫左側參數後，提示詞將即時顯示在這裡 ✨</div>
+          </div>
+        </div>
+        <div class="preview-footer">
+          <span id="charCount">字數：0</span>
+          <span id="sectionCount">區塊：0</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="bottom-bar">
+  <button class="btn btn-primary" onclick="generatePrompt()">✨ 產生提示詞</button>
+  <button class="btn btn-gold" onclick="copyPrompt()">📋 一鍵複製</button>
+  <button class="btn btn-outline" onclick="resetAll()">🔄 重新設定</button>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+(function(){
+  'use strict';
+  const fields = [
+    { id:'role', label:'角色', required:true },
+    { id:'context', label:'背景', required:false },
+    { id:'task', label:'任務', required:true },
+    { id:'format', label:'輸出格式', required:false },
+    { id:'tone', label:'語氣風格', required:false },
+    { id:'constraint', label:'限制條件', required:false },
+    { id:'example', label:'參考範例', required:false }
+  ];
+  const templates = [
+    {
+      role: '你是一位有10年經驗的ICF認證教練，擅長引導式提問與深度傾聽。',
+      context: '我的客戶是一位35歲的女性主管，剛被升職為部門經理，面臨從個人貢獻者轉型為團隊領導者的挑戰。',
+      task: '幫我設計一段1對1教練面談的開場白，包含破冰問題和本次面談的聚焦方向。',
+      format: '用條列式呈現，給3個不同風格的版本（溫暖支持型、直接挑戰型、好奇探索型）。',
+      tone: '溫暖但專業，像一位信任你的導師。',
+      constraint: '不要使用心理學術語，每個版本控制在150字以內。',
+      example: '嗨，今天想先聽聽你這週工作上最有成就感的一件事。'
+    },
+    {
+      role: '你是一位社群行銷專家，擁有5年以上小紅書、Instagram 內容營運經驗，擅長打造爆款文案。',
+      context: '我正在經營一個針對25-35歲職場女性的個人品牌帳號，主題是「高效工作與生活平衡」。',
+      task: '撰寫一篇小紅書貼文，主題是「週五下班後的30分鐘儀式感」，需要吸引目標受眾共鳴並引發互動。',
+      format: '包含標題（含emoji）、正文（分段+emoji標記）、結尾引導互動的提問、5個相關標籤。',
+      tone: '輕鬆活潑、有共鳴感，像閨蜜聊天一樣親切，但不失專業度。',
+      constraint: '總字數控制在400字以內，不要使用「內卷」「躺平」等過度使用的網路流行語。',
+      example: '✨ 週五下班後，我做了這3件事，整個週末都充電滿格！'
+    },
+    {
+      role: '你是一位資深數據分析師，精通 Python、SQL 和商業智慧工具，擅長將數據洞察轉化為可執行的商業建議。',
+      context: '我們是一家中型電商公司，最近一季的銷售數據顯示整體營收成長了15%，但客戶留存率下降了8%。',
+      task: '分析可能的原因，並提出一份結構化的分析報告大綱，包含假設、驗證方法和建議的數據指標。',
+      format: '用結構化報告格式，包含：摘要、關鍵發現、原因假設（按優先級排列）、驗證方法、行動建議。',
+      tone: '專業簡潔，數據驅動，適合呈給高階管理層閱讀。',
+      constraint: '不要出現原始程式碼，以商業語言為主，報告大綱控制在800字以內。',
+      example: '關鍵發現：儘管新客獲取率提升了22%，但30天內回購率從45%降至37%。'
+    }
+  ];
+  const els = {};
+  fields.forEach(f => { els[f.id] = document.getElementById(f.id); });
+  const previewEl = document.getElementById('previewContent');
+  const charCountEl = document.getElementById('charCount');
+  const sectionCountEl = document.getElementById('sectionCount');
+  const toastEl = document.getElementById('toast');
+  let debounceTimer = null;
+  function onInput(){
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(updatePreview, 300);
+  }
+  fields.forEach(f => { els[f.id].addEventListener('input', onInput); });
+  function buildPrompt(){
+    const parts = [];
+    let count = 0;
+    fields.forEach(f => {
+      const v = els[f.id].value.trim();
+      if(v){ parts.push('# ' + f.label + '\n' + v); count++; }
+    });
+    return { text: parts.join('\n\n'), sections: count };
+  }
+  function updatePreview(){
+    const { text, sections } = buildPrompt();
+    if(!text){
+      previewEl.innerHTML = '<div class="preview-placeholder">填寫左側參數後，提示詞將即時顯示在這裡 ✨</div>';
+      charCountEl.textContent = '字數：0';
+      sectionCountEl.textContent = '區塊：0';
+      return;
+    }
+    const html = text.replace(/# (.+)/g, '<span class="section-title"># $1</span>');
+    previewEl.innerHTML = html;
+    charCountEl.textContent = '字數：' + text.length;
+    sectionCountEl.textContent = '區塊：' + sections;
+  }
+  window.generatePrompt = function(){
+    let hasError = false;
+    fields.forEach(f => {
+      const el = els[f.id];
+      el.classList.remove('field-error');
+      if(f.required && !el.value.trim()){
+        el.classList.add('field-error');
+        const card = el.closest('.card');
+        card.classList.remove('shake');
+        void card.offsetWidth;
+        card.classList.add('shake');
+        if(!hasError){ el.focus(); el.scrollIntoView({ behavior:'smooth', block:'center' }); }
+        hasError = true;
+      }
+    });
+    if(hasError){ showToast('⚠️ 請填寫所有必填欄位', '#d9534f'); return; }
+    updatePreview();
+    showToast('✅ 提示詞已產生！');
+    if(window.innerWidth <= 860){ previewEl.scrollIntoView({ behavior:'smooth', block:'center' }); }
+  };
+  window.copyPrompt = function(){
+    const { text } = buildPrompt();
+    if(!text){ showToast('⚠️ 請先產生提示詞', '#d9534f'); return; }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(()=>{ showToast('📋 已複製到剪貼簿！'); }).catch(()=> fallbackCopy(text));
+      return;
+    }
+    fallbackCopy(text);
+  };
+  function fallbackCopy(text){
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;left:-9999px;top:-9999px';
+    document.body.appendChild(ta);
+    ta.focus(); ta.select();
+    try{ document.execCommand('copy'); showToast('📋 已複製到剪貼簿！'); }
+    catch(e){ prompt('請手動複製以下提示詞：', text); }
+    document.body.removeChild(ta);
+  }
+  window.resetAll = function(){
+    fields.forEach(f => { els[f.id].value = ''; els[f.id].classList.remove('field-error'); });
+    updatePreview();
+    showToast('🔄 已重新設定');
+  };
+  window.loadTemplate = function(idx){
+    const tpl = templates[idx];
+    fields.forEach(f => { els[f.id].value = tpl[f.id] || ''; els[f.id].classList.remove('field-error'); });
+    updatePreview();
+    const names = ['教練對話','文案撰寫','數據分析'];
+    showToast('📚 已載入「' + names[idx] + '」範本');
+    window.scrollTo({ top: 0, behavior:'smooth' });
+  };
+  let toastTimer = null;
+  function showToast(msg, bg){
+    toastEl.textContent = msg;
+    toastEl.style.background = bg || 'var(--green-dark)';
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(()=>{ toastEl.classList.remove('show'); }, 2200);
+  }
+})();
+</script>
+</body>
+</html>
