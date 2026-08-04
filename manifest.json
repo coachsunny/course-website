@@ -6,13 +6,12 @@
   "display": "standalone",
   "background_color": "#faf8f5",
   "theme_color": "#6b8f71",
-  "orientation": "any",
   "icons": [
     {
       "src": "images/logo.png",
-      "sizes": "any",
+      "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ]
 }
