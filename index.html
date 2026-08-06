@@ -1,278 +1,485 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-TW">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#6b8f71">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="images/logo.png">
-<title>自牧平施 - 做自己的英雄</title>
-<style>
-  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-  :root{
-    --bg:#faf8f5;--card:#ffffff;--border:#e8e4df;
-    --green:#6b8f71;--green-light:#e8f0e9;--green-dark:#4a6b4f;
-    --gold:#e8c07d;--gold-light:#fdf5e6;--gold-dark:#c9a05c;
-    --text:#2c2c2c;--text-secondary:#6b6b6b;--text-muted:#999;
-    --shadow:0 2px 12px rgba(0,0,0,0.06);
-    --shadow-hover:0 4px 20px rgba(0,0,0,0.1);
-    --radius:14px;
-  }
-  body{
-    font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Microsoft JhengHei","Noto Sans TC",sans-serif;
-    background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh;
-  }
-
-  /* Hero */
-  .hero{
-    text-align:center;padding:60px 24px 50px;
-    background:linear-gradient(135deg,var(--green) 0%,var(--green-dark) 100%);
-    color:#fff;position:relative;overflow:hidden;
-  }
-  .hero::before{
-    content:'';position:absolute;top:-40%;right:-15%;
-    width:500px;height:500px;border-radius:50%;
-    background:rgba(232,192,125,0.1);
-  }
-  .hero h1{font-size:2.2rem;font-weight:700;margin-bottom:8px;position:relative;z-index:1;letter-spacing:2px}
-  .hero .subtitle{font-size:1.1rem;opacity:0.9;margin-bottom:16px;position:relative;z-index:1}
-  .hero .tagline{
-    font-size:0.95rem;opacity:0.7;
-    font-style:italic;position:relative;z-index:1;
-  }
-  .hero .credentials{
-    display:flex;flex-wrap:wrap;justify-content:center;gap:8px;
-    margin-top:20px;position:relative;z-index:1;
-  }
-  .hero .cred-tag{
-    padding:4px 14px;border-radius:20px;font-size:0.78rem;
-    background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);
-  }
-
-  /* Nav */
-  nav{
-    display:flex;justify-content:center;gap:24px;
-    padding:16px 24px;background:var(--card);
-    border-bottom:1px solid var(--border);
-    position:sticky;top:0;z-index:50;
-  }
-  nav a{
-    text-decoration:none;color:var(--text-secondary);
-    font-size:0.92rem;font-weight:500;
-    padding:6px 16px;border-radius:20px;transition:all .2s;
-  }
-  nav a:hover{background:var(--green-light);color:var(--green-dark)}
-
-  /* Main */
-  .main{max-width:960px;margin:0 auto;padding:40px 24px 60px}
-
-  /* Section */
-  .section{margin-bottom:48px}
-  .section-title{
-    font-size:1.3rem;font-weight:700;color:var(--green-dark);
-    margin-bottom:20px;display:flex;align-items:center;gap:10px;
-  }
-  .section-title .icon{font-size:1.4rem}
-
-  /* Tool cards */
-  .tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
-  .tool-card{
-    background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
-    padding:24px;box-shadow:var(--shadow);transition:all .25s;
-    text-decoration:none;color:inherit;display:block;
-  }
-  .tool-card:hover{box-shadow:var(--shadow-hover);transform:translateY(-2px);border-color:var(--green)}
-  .tool-card .tool-icon{font-size:2rem;margin-bottom:12px}
-  .tool-card h3{font-size:1.05rem;font-weight:600;color:var(--green-dark);margin-bottom:8px}
-  .tool-card p{font-size:0.88rem;color:var(--text-secondary);line-height:1.6}
-  .tool-card .tool-tag{
-    display:inline-block;margin-top:12px;padding:3px 10px;border-radius:12px;
-    font-size:0.72rem;background:var(--green-light);color:var(--green-dark);font-weight:500;
-  }
-
-  /* Knowledge cards */
-  .knowledge-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px}
-  .knowledge-card{
-    background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
-    padding:20px;text-align:center;transition:all .2s;cursor:pointer;
-  }
-  .knowledge-card:hover{border-color:var(--gold);box-shadow:var(--shadow)}
-  .knowledge-card .k-icon{font-size:1.8rem;margin-bottom:10px}
-  .knowledge-card h4{font-size:0.95rem;font-weight:600;color:var(--text);margin-bottom:4px}
-  .knowledge-card p{font-size:0.8rem;color:var(--text-muted)}
-
-  /* Logo */
-  .hero .logo{
-    width:160px;height:auto;
-    margin-bottom:16px;
-  }
-
-  /* Coming soon */
-  .coming-soon{
-    text-align:center;padding:32px;background:var(--gold-light);
-    border:1px dashed var(--gold);border-radius:var(--radius);
-  }
-  .coming-soon p{color:var(--gold-dark);font-size:0.92rem}
-
-  /* Footer */
-  footer{
-    text-align:center;padding:30px 24px;
-    border-top:1px solid var(--border);
-    font-size:0.82rem;color:var(--text-muted);
-  }
-
-  /* Responsive */
-  @media(max-width:600px){
-    .hero h1{font-size:1.7rem}
-    .hero .subtitle{font-size:0.95rem}
-    nav{gap:12px;padding:12px 16px}
-    nav a{font-size:0.84rem;padding:5px 12px}
-    .main{padding:28px 16px 40px}
-  }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Sunny 自牧平施 - 做自己的英雄 | ICF 國際認證教練、人生教練、企業教練、親子教練、PMP 專案管理師">
+  <meta name="keywords" content="Sunny, 自牧平施, 教練家教班, 人生教練, 企業教練, 親子教練, ICF-ACC, PMP, 人生設計課, POY牌卡">
+  <meta name="author" content="Sunny 自牧平施">
+  <meta name="theme-color" content="#0a0d16">
+  <title>Sunny 自牧平施 | 做自己的英雄 - 國際認證專業教練</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="assets/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <!-- Ambient Background Orbs -->
+  <div class="ambient-light light-1"></div>
+  <div class="ambient-light light-2"></div>
+  <div class="ambient-light light-3"></div>
 
-<div class="hero">
-  <img src="images/logo.png" alt="自牧平施" class="logo">
-  <h1>自牧平施</h1>
-  <div class="subtitle">做自己的英雄</div>
-  <div class="tagline">教練 · 對話 · 成長</div>
-  <div class="credentials">
-    <span class="cred-tag">ICF-ACC 認證教練</span>
-    <span class="cred-tag">ICA-CPC</span>
-    <span class="cred-tag">POY-L2</span>
-    <span class="cred-tag">PMI-PMP</span>
-  </div>
-</div>
-
-<nav>
-  <a href="#knowledge">📚 知識庫</a>
-  <a href="#courses">🎓 課程</a>
-  <a href="#tools">🛠️ 工具集</a>
-  <a href="#about">🙋 關於我</a>
-</nav>
-
-<div class="main">
-
-  <!-- 知識庫 -->
-  <div class="section" id="knowledge">
-    <div class="section-title"><span class="icon">📚</span> 知識庫</div>
-    <div class="knowledge-grid">
-      <div class="knowledge-card">
-        <div class="k-icon">💚</div>
-        <h4>非暴力溝通</h4>
-        <p>NVC 方法論與實踐筆記</p>
-      </div>
-      <div class="knowledge-card">
-        <div class="k-icon">🎯</div>
-        <h4>教練技術</h4>
-        <p>ICF 核心能力與教練模型</p>
-      </div>
-      <div class="knowledge-card">
-        <div class="k-icon">🔮</div>
-        <h4>命理研究</h4>
-        <p>易經 · 紫微 · 八字</p>
-      </div>
-      <div class="knowledge-card">
-        <div class="k-icon">🤖</div>
-        <h4>AI 應用</h4>
-        <p>提示詞工程與智能體設計</p>
-      </div>
-    </div>
-    <div class="coming-soon" style="margin-top:20px">
-      <p>📖 知識庫內容整理中，敬請期待</p>
-    </div>
-  </div>
-
-  <!-- 課程 -->
-  <div class="section" id="courses">
-    <div class="section-title"><span class="icon">🎓</span> 課程</div>
-    <div class="tool-grid">
-      <div class="tool-card" style="cursor:default">
-        <div class="tool-icon">🎯</div>
-        <h3>教練家教班</h3>
-        <p>一年深度陪伴，培養專業教練的核心能力。涵蓋提問技巧、深度聆聽、對話結構，搭配 NVC 與 POY 工具實作。</p>
-        <span class="tool-tag" style="background:var(--green-light);color:var(--green-dark)">旗艦課程</span>
-      </div>
-      <div class="tool-card" style="cursor:default">
-        <div class="tool-icon">💬</div>
-        <h3>讓你的對話更有品質</h3>
-        <p>運用非暴力溝通框架，提升日常對話的深度與品質。適合想改善人際關係、增進溝通效率的人。</p>
-        <span class="tool-tag">溝通 · NVC</span>
-      </div>
-      <div class="tool-card" style="cursor:default">
-        <div class="tool-icon">🔄</div>
-        <h3>設計你的小習慣</h3>
-        <p>從微習慣開始，用系統化方法建立持久的好習慣。不靠意志力，靠設計。</p>
-        <span class="tool-tag">習慣養成 · 行為設計</span>
-      </div>
-      <div class="tool-card" style="cursor:default">
-        <div class="tool-icon">🧭</div>
-        <h3>人生設計課</h3>
-        <p>用設計思維重新規劃人生方向。探索價值觀、設定願景、設計行動方案，找到屬於你的路。</p>
-        <span class="tool-tag">人生規劃 · 設計思維</span>
-      </div>
-      <div class="tool-card" style="cursor:default">
-        <div class="tool-icon">🍵</div>
-        <h3>喝杯茶面對人生小議題</h3>
-        <p>在輕鬆的氛圍中，用 POY 視覺圖像對話工具，探索生活中卡住你的小議題。一杯茶的時間，看見不同的可能。</p>
-        <span class="tool-tag">圖像對話 · POY</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- 工具集 -->
-  <div class="section" id="tools">
-    <div class="section-title"><span class="icon">🛠️</span> 工具集</div>
-    <div class="tool-grid">
-      <a class="tool-card" href="tools/通用提示词生成器.html">
-        <div class="tool-icon">🧩</div>
-        <h3>通用提示詞生成器</h3>
-        <p>填寫角色、任務、格式等參數卡片，一鍵組合結構化優質提示詞，適用任何 AI 對話場景。</p>
-        <span class="tool-tag">7 參數 · 3 範本 · 即時預覽</span>
+  <!-- Navigation Bar -->
+  <header class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="#hero" class="nav-logo">
+        <img src="assets/logo.png" alt="自牧平施 Logo" class="brand-logo-img">
+        <span class="logo-text">自牧平施</span>
       </a>
-      <a class="tool-card" href="tools/对话练习提示词生成器.html">
-        <div class="tool-icon">🗣️</div>
-        <h3>對話練習提示詞生成器</h3>
-        <p>設定練習對象、溝通框架、自訂口令，快速生成 NVC 對話練習提示詞，貼到 ChatGPT 即可開始。</p>
-        <span class="tool-tag">NVC · 自訂場景 · 口令設定</span>
-      </a>
-      <div class="tool-card" style="opacity:0.5;cursor:default">
-        <div class="tool-icon">🔮</div>
-        <h3>命理分析工具</h3>
-        <p>結合易經、紫微、八字的 AI 深度剖析工具，規劃中。</p>
-        <span class="tool-tag" style="background:var(--gold-light);color:var(--gold-dark)">開發中</span>
+      <nav class="nav-menu" id="nav-menu">
+        <a href="#hero" class="nav-link active">首頁</a>
+        <a href="#about" class="nav-link">關於我</a>
+        <a href="#knowledge" class="nav-link">知識庫</a>
+        <a href="#courses" class="nav-link">課程</a>
+        <a href="#tools" class="nav-link">工具集</a>
+        <a href="#contact" class="nav-link btn-contact-nav">預約教練諮詢</a>
+      </nav>
+      <button class="nav-toggle" id="nav-toggle" aria-label="切換選單">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+      <div class="container hero-container">
+        <div class="hero-content">
+          <div class="status-badge">
+            <span class="pulse-dot"></span>
+            <span>開放教練諮詢 & 課程預約中</span>
+          </div>
+          <h1 class="hero-title">
+            你好，我是 <span class="gradient-text">Sunny</span><br>
+            <span class="sub-hero-title">自牧平施 — 做自己的英雄</span>
+          </h1>
+          <blockquote class="hero-quote">
+            「我的到來只為一個目的，在你我的交織下，成就彼此，一句問話，啟人潛能，轉折仰昇，心安幸福」
+          </blockquote>
+          <p class="hero-subtitle">
+            ICF-ACC 國際認證教練 ｜ 中華專業教練發展協會 前理事長 ｜ PMP 國際專案管理師。<br>
+            從資訊工程碩士與企業資深管理，到專注生命陪伴。透過一句溫暖問話，陪你轉折仰昇，做自己的英雄。
+          </p>
+          <div class="hero-actions">
+            <a href="#courses" class="btn btn-primary">
+              <i class="fas fa-compass"></i> 探索課程
+            </a>
+            <a href="#tools" class="btn btn-secondary">
+              <i class="fas fa-wrench"></i> 使用工具
+            </a>
+          </div>
+          <div class="hero-stats">
+            <div class="stat-card">
+              <span class="stat-number">15+</span>
+              <span class="stat-label">年專業教練資歷</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-number">ICF-ACC</span>
+              <span class="stat-label">國際教練聯盟認證</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-number">100%</span>
+              <span class="stat-label">溫暖與深度陪伴</span>
+            </div>
+          </div>
+        </div>
+        <div class="hero-avatar-wrapper">
+          <div class="avatar-glow"></div>
+          <div class="avatar-card">
+            <img src="assets/sunny_ip.png" alt="Sunny 專業肖像 Photo" class="avatar-img">
+            <div class="floating-badge badge-1">
+              <i class="fas fa-award"></i>
+              <span>ICF-ACC & PMP 雙認證</span>
+            </div>
+            <div class="floating-badge badge-2">
+              <i class="fas fa-heart"></i>
+              <span>自牧平施 做自己的英雄</span>
+            </div>
+          </div>
+        </div>
       </div>
+    </section>
+
+    <!-- About / Brand Philosophy -->
+    <section class="about section-padding" id="about">
+      <div class="container">
+        <div class="section-header text-center">
+          <span class="section-tag">ABOUT ME</span>
+          <h2 class="section-title">自牧平施 <span class="gradient-text">核心教練領域</span></h2>
+          <p class="section-description">以專業問話、同理傾聽與系統化方法，引導你發現內在力量。</p>
+        </div>
+        <div class="about-grid">
+          <div class="about-card glass-card">
+            <div class="card-icon gradient-icon-1">
+              <i class="fas fa-seedling"></i>
+            </div>
+            <h3>人生教練 (Life Coaching)</h3>
+            <p>陪伴你釐清人生方向、突破心靈迷惘與迷茫，重新連結內在渴望，活出心安幸福的生命狀態。</p>
+          </div>
+          <div class="about-card glass-card">
+            <div class="card-icon gradient-icon-2">
+              <i class="fas fa-chart-line"></i>
+            </div>
+            <h3>企業教練 (Executive Coaching)</h3>
+            <p>結合 PMP 專案管理框架與高階對話，協助企業經理人與團隊轉化思維、優化溝通與提升領導影響力。</p>
+          </div>
+          <div class="about-card glass-card">
+            <div class="card-icon gradient-icon-3">
+              <i class="fas fa-hands-holding-child"></i>
+            </div>
+            <h3>親子教練 (Parent-Child)</h3>
+            <p>導入非暴力溝通 (NVC) 與深度對話技巧，搭起父母與孩子心與心的橋樑，建立品質優良的家庭關係。</p>
+          </div>
+        </div>
+        <div style="text-align:center;margin-top:28px">
+          <a href="about.html" class="btn btn-secondary" style="display:inline-flex;align-items:center;gap:8px">
+            <i class="fas fa-user"></i> 查看完整個人介紹 →
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Knowledge Base -->
+    <section class="section-padding" id="knowledge">
+      <div class="container">
+        <div class="section-header text-center">
+          <span class="section-tag">KNOWLEDGE BASE</span>
+          <h2 class="section-title">知識 <span class="gradient-text">庫</span></h2>
+          <p class="section-description">持續累積的專業知識與實踐筆記。</p>
+        </div>
+        <div class="tools-grid">
+          <div class="tool-card glass-card">
+            <div class="tool-card-icon" style="font-size:2rem">💚</div>
+            <h3>非暴力溝通</h3>
+            <p>NVC 方法論與實踐筆記，學習以觀察、感受、需要、請求四步驟建立深度連結。</p>
+            <span class="tool-badge">溝通 · NVC</span>
+          </div>
+          <div class="tool-card glass-card">
+            <div class="tool-card-icon" style="font-size:2rem">🎯</div>
+            <h3>教練技術</h3>
+            <p>ICF 核心能力與教練模型，系統化學習專業教練的提問、聆聽與回饋技巧。</p>
+            <span class="tool-badge">ICF · 核心能力</span>
+          </div>
+          <div class="tool-card glass-card">
+            <div class="tool-card-icon" style="font-size:2rem">🔮</div>
+            <h3>命理研究</h3>
+            <p>易經、紫微斗數與八字命理，結合現代心理學的東西方對話哲學探索。</p>
+            <span class="tool-badge">易經 · 紫微 · 八字</span>
+          </div>
+          <div class="tool-card glass-card">
+            <div class="tool-card-icon" style="font-size:2rem">🤖</div>
+            <h3>AI 應用</h3>
+            <p>提示詞工程、n8n 工作流與智能體設計，將 AI 融入教練與教學場景。</p>
+            <span class="tool-badge">提示詞 · 智能體 · 工作流</span>
+          </div>
+        </div>
+        <div class="glass-card" style="margin-top:24px;padding:24px;text-align:center">
+          <p style="color:var(--text-secondary);font-size:0.95rem">
+            <i class="fas fa-book-open" style="color:var(--accent-gold);margin-right:8px"></i>
+            知識庫內容持續整理中，敬請期待更豐富的上線內容
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Courses -->
+    <section class="courses section-padding" id="courses">
+      <div class="container">
+        <div class="section-header text-center">
+          <span class="section-tag">FEATURED COURSES</span>
+          <h2 class="section-title">5 大主打 <span class="gradient-text">課程與工作坊</span></h2>
+          <p class="section-description">精心設計的成長旅程，為不同階段的你提供最適切的啟發與陪伴。</p>
+        </div>
+        <div class="courses-grid">
+          <!-- Course 1 -->
+          <div class="course-card glass-card featured">
+            <div class="course-badge">⭐ 旗艦陪伴課</div>
+            <div class="course-header">
+              <div class="course-icon"><i class="fas fa-user-graduate"></i></div>
+              <h3>教練家教班</h3>
+              <span class="course-subtitle">一年深度陪伴</span>
+            </div>
+            <p class="course-desc">Sunny 最重視的旗艦養成計劃。長達 365 天的高品質個別諮詢、家教式指導與社群陪伴，鍛鍊終身受用的教練心法與洞察力。</p>
+            <ul class="course-features">
+              <li><i class="fas fa-check"></i> 1 對 1 個別深度教練對話</li>
+              <li><i class="fas fa-check"></i> 全年持續成長軌跡追蹤</li>
+              <li><i class="fas fa-check"></i> 系統化思維與案例實演</li>
+            </ul>
+          </div>
+          <!-- Course 2 -->
+          <div class="course-card glass-card">
+            <div class="course-header">
+              <div class="course-icon"><i class="fas fa-comments"></i></div>
+              <h3>讓你的對話更有品質</h3>
+              <span class="course-subtitle">高品質溝通工作坊</span>
+            </div>
+            <p class="course-desc">對話是關係的基石。透過專業問話技巧與非暴力溝通，擺脫無效爭執，創造深層理解與高質感的雙向互動。</p>
+            <ul class="course-features">
+              <li><i class="fas fa-check"></i> 同理傾聽與精準提問</li>
+              <li><i class="fas fa-check"></i> 解除防禦性對話模式</li>
+            </ul>
+          </div>
+          <!-- Course 3 -->
+          <div class="course-card glass-card">
+            <div class="course-header">
+              <div class="course-icon"><i class="fas fa-bullseye"></i></div>
+              <h3>設計你的小習慣</h3>
+              <span class="course-subtitle">習慣養成實踐課</span>
+            </div>
+            <p class="course-desc">改變不需要咬牙苦撐。運用微習慣設計原理，將目標拆解為輕鬆可行的每日行動，輕鬆堆疊可持續的改變。</p>
+            <ul class="course-features">
+              <li><i class="fas fa-check"></i> 微習慣系統構建</li>
+              <li><i class="fas fa-check"></i> 克服拖延與意志力耗竭</li>
+            </ul>
+          </div>
+          <!-- Course 4 -->
+          <div class="course-card glass-card">
+            <div class="course-header">
+              <div class="course-icon"><i class="fas fa-map-marked-alt"></i></div>
+              <h3>人生設計課</h3>
+              <span class="course-subtitle">生涯與生命規劃</span>
+            </div>
+            <p class="course-desc">結合 Stanford 設計思考 (Design Thinking) 與生命教練工具，重新審視職業、健康、娛樂與關係，打造專屬人生藍圖。</p>
+            <ul class="course-features">
+              <li><i class="fas fa-check"></i> 生命儀表板量測</li>
+              <li><i class="fas fa-check"></i> 多重原型人生測試</li>
+            </ul>
+          </div>
+          <!-- Course 5 -->
+          <div class="course-card glass-card">
+            <div class="course-header">
+              <div class="course-icon"><i class="fas fa-mug-hot"></i></div>
+              <h3>喝杯茶面對人生小議題</h3>
+              <span class="course-subtitle">圖像對話 + POY 牌卡體驗</span>
+            </div>
+            <p class="course-desc">運用國際 Points of You (POY) 圖像卡牌工具，在輕鬆奉茶的溫暖氛圍中，用直覺圖像打開盲點，溫柔解開生活結扣。</p>
+            <ul class="course-features">
+              <li><i class="fas fa-check"></i> 國際 POY-L2 工具應用</li>
+              <li><i class="fas fa-check"></i> 圖像聯想與潛意識對話</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tools -->
+    <section class="section-padding" id="tools">
+      <div class="container">
+        <div class="section-header text-center">
+          <span class="section-tag">TOOLKIT</span>
+          <h2 class="section-title">工具 <span class="gradient-text">集</span></h2>
+          <p class="section-description">實用的 AI 輔助工具，讓你的學習與練習更高效。</p>
+        </div>
+        <div class="tools-grid">
+          <a class="tool-card glass-card" href="tools/通用提示词生成器.html" style="text-decoration:none;color:inherit">
+            <div class="tool-card-icon" style="font-size:2rem">🧩</div>
+            <h3>通用提示詞生成器</h3>
+            <p>填寫角色、任務、格式等參數卡片，一鍵組合結構化優質提示詞，適用任何 AI 對話場景。</p>
+            <span class="tool-badge">7 參數 · 3 範本 · 即時預覽</span>
+          </a>
+          <a class="tool-card glass-card" href="tools/对话练习提示词生成器.html" style="text-decoration:none;color:inherit">
+            <div class="tool-card-icon" style="font-size:2rem">🗣️</div>
+            <h3>對話練習提示詞生成器</h3>
+            <p>設定練習對象、溝通框架、自訂口令，快速生成 NVC 對話練習提示詞，貼到 ChatGPT 即可開始。</p>
+            <span class="tool-badge">NVC · 自訂場景 · 口令設定</span>
+          </a>
+          <div class="tool-card glass-card" style="opacity:0.5;cursor:default">
+            <div class="tool-card-icon" style="font-size:2rem">🔮</div>
+            <h3>命理分析工具</h3>
+            <p>結合易經、紫微、八字的 AI 深度剖析工具。</p>
+            <span class="tool-badge" style="background:rgba(245,158,11,0.2);color:var(--accent-gold)">開發中</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Timeline & Qualifications -->
+    <section class="timeline-section section-padding" id="timeline">
+      <div class="container">
+        <div class="section-header text-center">
+          <span class="section-tag">CREDENTIALS & MILESTONES</span>
+          <h2 class="section-title">專業認證 <span class="gradient-text">& 經歷里程碑</span></h2>
+          <p class="section-description">結合跨領域背景與國際認證，積累豐富的生命引導經驗。</p>
+        </div>
+        <div class="timeline">
+          <!-- Timeline Item 1 -->
+          <div class="timeline-item left">
+            <div class="timeline-dot"><i class="fas fa-crown"></i></div>
+            <div class="timeline-content glass-card">
+              <span class="timeline-date">2015 – 2019</span>
+              <h3 class="timeline-title">中華專業教練發展協會 理事長</h3>
+              <h4 class="timeline-company">推動台灣專業教練發展</h4>
+              <p class="timeline-desc">帶領協會推廣教練文化，舉辦多場專業論壇與工作坊，促進國際教練標準在在地落地與應用。</p>
+            </div>
+          </div>
+          <!-- Timeline Item 2 -->
+          <div class="timeline-item right">
+            <div class="timeline-dot"><i class="fas fa-certificate"></i></div>
+            <div class="timeline-content glass-card">
+              <span class="timeline-date">2010 - 2012</span>
+              <h3 class="timeline-title">取得專業國際教練雙認證</h3>
+              <h4 class="timeline-company">ICF-ACC ＆ ICA-CPC & POY-L2</h4>
+              <p class="timeline-desc">通過 ICF 國際教練聯盟 (ACC) 與 ICA 國際教練學院 (CPC) 認證，並完成 Points of You 創意開發工具 Level 2 授證。</p>
+              <div class="timeline-tags">
+                <span class="tag">ICF-ACC (2010/10)</span>
+                <span class="tag">ICA-CPC (2010/08)</span>
+                <span class="tag">POY-L2 (2012/12)</span>
+              </div>
+            </div>
+          </div>
+          <!-- Timeline Item 3 -->
+          <div class="timeline-item left">
+            <div class="timeline-dot"><i class="fas fa-project-diagram"></i></div>
+            <div class="timeline-content glass-card">
+              <span class="timeline-date">2008</span>
+              <h3 class="timeline-title">PMI-PMP 國際專案管理師認證</h3>
+              <h4 class="timeline-company">Project Management Professional</h4>
+              <p class="timeline-desc">具備嚴謹的專案規劃、範疇管理與風險控管能力，將系統化專案邏輯融合於企業與個人教練輔導中。</p>
+            </div>
+          </div>
+          <!-- Timeline Item 4 -->
+          <div class="timeline-item right">
+            <div class="timeline-dot"><i class="fas fa-building"></i></div>
+            <div class="timeline-content glass-card">
+              <span class="timeline-date">企業歷練</span>
+              <h3 class="timeline-title">企業中階主管經驗</h3>
+              <h4 class="timeline-company">飛利浦被動元件 · 鼎新電腦 · 康寧顯示玻璃</h4>
+              <p class="timeline-desc">歷任企業採購與物料規劃管理，累積深厚的跨部門協調與系統化思維能力。後投入教練與助人領域，將管理實戰轉化為陪伴力量。</p>
+            </div>
+          </div>
+          <!-- Timeline Item 5 -->
+          <div class="timeline-item left">
+            <div class="timeline-dot"><i class="fas fa-graduation-cap"></i></div>
+            <div class="timeline-content glass-card">
+              <span class="timeline-date">學歷</span>
+              <h3 class="timeline-title">義守大學 資訊工程研究所 碩士</h3>
+              <h4 class="timeline-company">資訊工程 · 跨界融合</h4>
+              <p class="timeline-desc">資工碩士背景，早年曾以 Basic 開發進銷存系統販售。技術思維與人文關懷的跨界融合，成為教練事業的獨特優勢。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Presentation Showcase -->
+    <section class="presentation-showcase section-padding">
+      <div class="container">
+        <div class="glass-card presentation-card">
+          <div class="presentation-img-wrapper">
+            <img src="assets/sunny_presentation.png" alt="Sunny 簡介簡報圖" class="presentation-img">
+          </div>
+          <div class="presentation-info">
+            <span class="section-tag">INTRODUCTION SLIDE</span>
+            <h2>關於 Sunny 的全方位簡介</h2>
+            <p>融合人生、企業、親子教練，多元課程與工具認證，陪伴無數學員找到心中的英雄。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Innovations -->
+    <section class="innovations section-padding" id="innovations">
+      <div class="container">
+        <div class="section-header text-center">
+          <span class="section-tag">FUTURE & INNOVATION</span>
+          <h2 class="section-title">創新增能 <span class="gradient-text">& 探索方向</span></h2>
+          <p class="section-description">結合現代 AI 科技與東西方智慧，賦能更高質感的對話體驗。</p>
+        </div>
+        <div class="skills-grid">
+          <div class="skill-category glass-card">
+            <div class="skill-head">
+              <i class="fas fa-robot icon-gradient"></i>
+              <h3>🤖 AI 對話練習智能體</h3>
+            </div>
+            <p class="innovation-text">成功研發並實測「NVC 非暴力溝通 父子版 AI 練習智能體」，讓學員在與 AI 互動模擬中，無壓力練習同理傾聽與表達。</p>
+          </div>
+          <div class="skill-category glass-card">
+            <div class="skill-head">
+              <i class="fas fa-laptop-house icon-gradient"></i>
+              <h3>🎓 深度學習社群平台</h3>
+            </div>
+            <p class="innovation-text">持續建置線上學習共學平台，提供高品質線上教室、即時圖像互動與課後沉浸式討論。</p>
+          </div>
+          <div class="skill-category glass-card">
+            <div class="skill-head">
+              <i class="fas fa-yin-yang icon-gradient"></i>
+              <h3>☯️ 東西方對話哲學</h3>
+            </div>
+            <p class="innovation-text">深入研究易經、紫微與八字等東方傳統哲學，將其與西方現代心理學及教練提問工具做深度的對話整合。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section class="contact section-padding" id="contact">
+      <div class="container">
+        <div class="contact-box glass-card">
+          <div class="contact-content">
+            <span class="section-tag">GET IN TOUCH</span>
+            <h2 class="contact-title">開啟專屬的 <span class="gradient-text">英雄對話</span></h2>
+            <p class="contact-desc">不論您想了解課程、預約一對一諮詢，或邀請工作坊合作，都歡迎隨時與 Sunny 聯繫！</p>
+            <div class="contact-methods">
+              <div class="contact-method-item">
+                <div class="method-icon"><i class="fas fa-envelope"></i></div>
+                <div>
+                  <span class="method-label">電子郵件</span>
+                  <div class="email-copy-wrapper">
+                    <span id="contact-email">shunyi.lee@gmail.com</span>
+                    <button id="btn-copy-email" class="btn-copy" title="複製 Email">
+                      <i class="fas fa-copy"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="contact-method-item">
+                <div class="method-icon"><i class="fas fa-compass"></i></div>
+                <div>
+                  <span class="method-label">品牌名稱</span>
+                  <span class="method-value">自牧平施 — 做自己的英雄</span>
+                </div>
+              </div>
+            </div>
+            <!-- Social Links -->
+            <div class="social-links">
+              <a href="https://line.me/ti/p/sunny1962" target="_blank" rel="noopener" class="social-btn" aria-label="Line" title="Line: sunny1962">
+                <i class="fab fa-line"></i>
+              </a>
+              <a href="https://www.facebook.com/sunny.lee.5268" target="_blank" rel="noopener" class="social-btn" aria-label="Facebook" title="Facebook">
+                <i class="fab fa-facebook-f"></i>
+              </a>
+              <span class="social-btn social-text" title="微信: Sunny196208">
+                <i class="fas fa-comment-dots"></i>
+                <small>微信</small>
+              </span>
+              <span class="social-btn social-text" title="小紅書: 5551283018">
+                <i class="fas fa-book-open"></i>
+                <small>小紅書</small>
+              </span>
+              <span class="social-btn social-text" title="抖音: 27648503528">
+                <i class="fab fa-tiktok"></i>
+                <small>抖音</small>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-container">
+      <p>&copy; <span id="current-year">2026</span> Sunny 自牧平施. 做自己的英雄 | All Rights Reserved.</p>
+      <a href="#hero" class="back-to-top" aria-label="返回頂部">
+        <i class="fas fa-arrow-up"></i>
+      </a>
     </div>
-  </div>
+  </footer>
 
-  <!-- 關於我 -->
-  <div class="section" id="about">
-    <div class="section-title"><span class="icon">🙋</span> 關於我</div>
-    <div class="tool-card" style="cursor:default">
-      <p style="font-size:0.95rem;line-height:1.8;color:var(--text)">
-        我是「自牧平施」品牌的創辦人，一位 ICF-ACC 認證教練。
-        相信每個人都能「做自己的英雄」——透過非暴力溝通的深度對話，
-        幫助你看見內在的需求，找到前行的力量。
-      </p>
-      <p style="font-size:0.95rem;line-height:1.8;color:var(--text);margin-top:16px">
-        這個網站是我的個人知識基地，收錄了我設計的小工具、學習筆記、以及課程資源。
-        歡迎使用，也歡迎分享給需要的朋友。
-      </p>
-    </div>
-  </div>
-
-</div>
-
-<footer>
-  自牧平施 © 2026 ｜ 做自己的英雄 ｜ 且行且看
-</footer>
-
-<script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js').catch(() => {});
-}
-</script>
+  <script src="script.js"></script>
 </body>
 </html>

@@ -1,14 +1,14 @@
 {
   "name": "自牧平施 - 做自己的英雄",
   "short_name": "自牧平施",
-  "description": "個人知識庫、實用工具集、課程資源",
-  "start_url": "./",
+  "description": "Sunny 自牧平施 - ICF 國際認證教練、人生教練、企業教練、親子教練",
+  "start_url": "/",
   "display": "standalone",
-  "background_color": "#faf8f5",
-  "theme_color": "#6b8f71",
+  "background_color": "#0a0d16",
+  "theme_color": "#0a0d16",
   "icons": [
     {
-      "src": "images/logo.png",
+      "src": "assets/logo.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
